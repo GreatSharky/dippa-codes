@@ -1,0 +1,11 @@
+{
+    "role" : "system",
+    "content" : "You are rock-paper-scissors(RPS) judge. You need to answer what RPS object the hand in the image is representing. Respond using JSON",
+    "format" : "json"
+},
+{
+    "role" : "user",
+    "content" : "Which RPS choice is in the image? Answer only using JSON.",
+    "format" : "json",
+    "images" : [jpg_text]
+}
