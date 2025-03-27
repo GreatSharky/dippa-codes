@@ -22,15 +22,17 @@ lineType               = 1
 cam_ip = os.environ.get("CAM_IP")
 
 cap = cv2.VideoCapture(cam_ip)
-box = [90,200,200,200]
-for i in range(4000):
+box = [90,200,2*64,2*64]
+sign_names = ["ok", "next", "previous", "1", "2","3","4","5",""]
+sign_index = 0
+for i in range(len(sign_names)*200):
     ret, frame = cap.read()
-    if i == 200:
+    if 199 == i%200:
         ok = frame
         ok = ok[box[1]:box[1]+box[2],box[0]:box[0]+box[3],:]
-        cv2.imshow(str(ok.shape), ok)
-        cv2.imwrite("ok.jpg", ok)
-    cv2.putText(frame,f'OK sign {200-i}', 
+        cv2.imwrite(f"{sign_names[sign_index]}.jpg", ok)
+        sign_index += 1
+    cv2.putText(frame,f'{sign_names[sign_index]} sign {200-i%200}', 
     bottomLeftCornerOfText, 
     font, 
     fontScale,
@@ -39,7 +41,7 @@ for i in range(4000):
     lineType)
     frame = red_square(frame, box[0],box[1],box[2],box[3],2)
     cv2.imshow("win", frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q') or sign_names[sign_index] == "":
         break
     print(i)
 
