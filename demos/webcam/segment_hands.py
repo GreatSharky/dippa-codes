@@ -4,18 +4,14 @@ import cv2
 import time
 import matplotlib.pyplot as plt
 
-sam_model = SAM("sam2.1_s.pt")
-img_ok = cv2.imread("ok.jpg")
-cv2.imshow("original",img_ok)
-print(img_ok.shape)
-sam_results = sam_model(img_ok,points=[64,80])
-mask = sam_results[0].masks.cpu().data
-h,w = mask.shape[-2:]
-mask = mask.reshape(h,w,1).numpy()
-img = img_ok*mask
-print(img_ok[64,64,:])
-print(img[64,64,:])
-
-cv2.imshow("mask", img)
-plt.imshow(img)
-plt.show()
+sam_model = SAM("sam2.1_b.pt")
+file_names = ["ok", "next", "previous", "1", "2","3","4","5"]
+for name in file_names:
+    img_ok = cv2.imread(f"{name}.jpg")
+    sam_results = sam_model(img_ok,points=[64,90])
+    mask = sam_results[0].masks.cpu().data
+    h,w = mask.shape[-2:]
+    mask = mask.reshape(h,w,1).numpy()
+    img = img_ok*mask
+    cv2.imwrite(f"{name}_mask.jpg", img)
+    
