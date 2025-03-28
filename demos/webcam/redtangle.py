@@ -32,14 +32,15 @@ for i in range(len(sign_names)*200):
         ok = ok[box[1]:box[1]+box[2],box[0]:box[0]+box[3],:]
         cv2.imwrite(f"{sign_names[sign_index]}.jpg", ok)
         sign_index += 1
-    cv2.putText(frame,f'{sign_names[sign_index]} sign {200-i%200}', 
-    bottomLeftCornerOfText, 
-    font, 
-    fontScale,
-    fontColor,
-    thickness,
-    lineType)
     frame = red_square(frame, box[0],box[1],box[2],box[3],2)
+    frame = cv2.flip(frame, 1)
+    cv2.putText(frame,f'{sign_names[sign_index]} sign {200-i%200}', 
+        bottomLeftCornerOfText, 
+        font, 
+        fontScale,
+        fontColor,
+        thickness,
+        lineType)
     cv2.imshow("win", frame)
     if cv2.waitKey(1) & 0xFF == ord('q') or sign_names[sign_index] == "":
         break
