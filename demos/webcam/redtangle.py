@@ -22,7 +22,7 @@ lineType               = 1
 cam_ip = os.environ.get("CAM_IP")
 
 cap = cv2.VideoCapture(cam_ip)
-box = [90,200,2*64,2*64]
+box = [90,300,2*64,2*64]
 sign_names = ["ok", "next", "previous", "1", "2","3","4","5",""]
 sign_index = 0
 for i in range(len(sign_names)*200):
