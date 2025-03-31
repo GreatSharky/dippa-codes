@@ -5,7 +5,7 @@ import time
 import matplotlib.pyplot as plt
 
 sam_model = SAM("sam2.1_b.pt")
-file_names = ["ok", "next", "previous", "1", "2","3","4","5"]
+file_names = ["ok1", "next", "previous", "1", "2","3","4","5"]
 for name in file_names:
     img_ok = cv2.imread(f"{name}.jpg")
     sam_results = sam_model(img_ok,points=[64,90])

@@ -33,7 +33,7 @@ cap = cv2.VideoCapture(cam_ip)
 box = [90,300,2*64,2*64]
 sign_names = ["ok", "next", "previous", "1", "2","3","4","5",""]
 sign_index = 0
-sam_model = SAM("sam2.1_t.pt")
+sam_model = SAM("sam2.1_s.pt")
 for i in range(2000):
     ret, frame = cap.read()
     ok = frame
