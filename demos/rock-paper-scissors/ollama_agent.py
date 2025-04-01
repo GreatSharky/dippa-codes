@@ -35,4 +35,4 @@ for i in ["r", "p", "s"]:
             "images" : [jpg_text]
         }
     ])
-    print(response.message.content)
+    print(response)
