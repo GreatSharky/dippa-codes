@@ -33,6 +33,7 @@ class VLM_llama(VLM):
     def __system_prompt(self):
         msgs = []
         img_id = self.rng.choice(8,self.samples,replace=False)
+        print(img_id)
         for index, ges in enumerate(self.gestures):
             for i in range(self.samples):
                 file_name = f"masks/{ges}_{img_id[i]}.jpg"
