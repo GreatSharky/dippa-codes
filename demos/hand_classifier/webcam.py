@@ -8,7 +8,9 @@ class Webcam():
     def __init__(self, cam: str):
         self.__cap = cv2.VideoCapture(cam)
         self.__bb = [90,200,128,128]
-        os.makedirs("tmp", exist_ok=True)
+        self.__path = "tmp"
+        os.makedirs(self.__path, exist_ok=True)
+        self.clear_tmp_folder()
         self.cap_time = True
         self.mask_ready = False
         self.class_ready = False
@@ -23,11 +25,11 @@ class Webcam():
             if self.cap_time and 99 == i %100:
                 capture = self.capture()
                 file = f"{i}"
-                cv2.imwrite(f"tmp/{file}_cap.jpg", capture)
+                cv2.imwrite(f"{self.__path}/{file}_cap.jpg", capture)
                 self.cap_time = False
-                print("Capture made", f"tmp/{file}_cap.jpg")
+                print("Capture made", f"{self.__path}/{file}_cap.jpg")
             if self.mask_ready:
-                mask_file = f"tmp/{file}_mask.jpg"
+                mask_file = f"{self.__path}/{file}_mask.jpg"
                 mask_img = cv2.imread(mask_file)
                 if type(mask_img) != type(None):
                     self.__add_image(1,1, mask_img)
@@ -49,7 +51,7 @@ class Webcam():
                 break
 
     def check_programstate(self, index):
-        path = "tmp"
+        path = self.__path
         files = [f for f in os.listdir(path)]
         self.mask_ready = f"{index}_mask.jpg" in files
         self.class_ready = f"{index}.tmp" in files
@@ -62,7 +64,7 @@ class Webcam():
         return self.frame[box[1]:box[1]+box[2], box[0]:box[0]+box[3],:]
     
     def read_classification(self, file):
-        with open(f"tmp/{file}", "r") as file:
+        with open(f"{self.__path}/{file}", "r") as file:
             classification = file.read()
         return classification
     
@@ -92,6 +94,10 @@ class Webcam():
             thickness,
             lineType)
         return frame
+    
+    def clear_tmp_folder(self):
+        for file in os.listdir(self.__path):
+            os.unlink(f"{self.__path}/{file}")
 
 
 if __name__ == "__main__":
