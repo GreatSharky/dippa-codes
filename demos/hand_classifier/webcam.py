@@ -4,53 +4,55 @@ import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-class Webcam_filemonitor(FileSystemEventHandler):
-    def __init__(self, cam):
-        super().__init__()
-        self.webcam = Webcam_logic(cam)
-
-    def on_created(self, event):
-        if not event.is_directory:
-            file_path = event.src_path
-            file = file_path[len("tmp/"):]
-            if "_mask.jpg" in file
-
-
-class Webcam_logic():
+class Webcam():
     def __init__(self, cam: str):
         self.__cap = cv2.VideoCapture(cam)
-        self.__gestures = ["ok", "next", "previous", "1", "2","3","4","5"]
-        self.__bb = [90,300,128,128]
+        self.__bb = [90,200,128,128]
         os.makedirs("tmp", exist_ok=True)
-        self.cap_time = False
+        self.cap_time = True
         self.mask_ready = False
         self.class_ready = False
 
     def start(self):
+        file = "0"
+        text = ""
         for i in range(20000):
+            self.check_programstate(file)
             ret, self.frame = self.__cap.read()
             # Do capture, add box, add latest mask
-            if self.cap_time:
+            if self.cap_time and 99 == i %100:
                 capture = self.capture()
                 file = f"{i}"
-                cv2.imwrite(f"tmp/{file}.jpg", capture)
+                cv2.imwrite(f"tmp/{file}_cap.jpg", capture)
+                self.cap_time = False
+                print("Capture made", f"tmp/{file}_cap.jpg")
             if self.mask_ready:
                 mask_file = f"tmp/{file}_mask.jpg"
                 mask_img = cv2.imread(mask_file)
-                self.__add_image(1,1, mask_img)
+                if type(mask_img) != type(None):
+                    self.__add_image(1,1, mask_img)
+                else:
+                    print(file)
 
-            self.frame = self.__add_red_rectangle(self.frame)
+            self.frame = self.__add_red_rectangle()
             self.frame = cv2.flip(self.frame, 1) # Flip for more inuitivness
             # Add text
-            text = ""
             if self.class_ready:
                 class_file = f"{file}.tmp"
                 classification = self.read_classification(class_file)
                 text = f"Classified as {classification}"
-                self.frame = self.__add_text(self.frame, text, corner=(200,2))
+                self.cap_time = True
+                file = ""
+            self.frame = self.__add_text(self.frame, text)
             cv2.imshow("win", self.frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+    def check_programstate(self, index):
+        path = "tmp"
+        files = [f for f in os.listdir(path)]
+        self.mask_ready = f"{index}_mask.jpg" in files
+        self.class_ready = f"{index}.tmp" in files
 
     def __add_image(self, x, y, img):
         self.frame[y:y+img.shape[1], x:x+img.shape[0],:] = img
@@ -65,14 +67,15 @@ class Webcam_logic():
         return classification
     
     def __add_red_rectangle(self, l=1):
-        try:
-            self.frame[self.__bb[1]:self.__bb[1]+self.__bb[3],self.__bb[0]:self.__bb[0]+l,:] = [0,0,255]
-            self.frame[self.__bb[1]:self.__bb[1]+l,self.__bb[0]:self.__bb[0]+self.__bb[2],:] = [0,0,255]
-            self.frame[self.__bb[1]:self.__bb[1]+self.__bb[3]+l,self.__bb[0]+self.__bb[2]:self.__bb[0]+self.__bb[2]+l,:] = [0,0,255]
-            self.frame[self.__bb[1]+self.__bb[3]:self.__bb[1]+self.__bb[3]+l, self.__bb[0]:self.__bb[0]+self.__bb[2]+l,:] = [0,0,255]
-        except IndexError as e:
-            print(e)
-            return self.frame
+        x = self.__bb[0]
+        y = self.__bb[1]
+        w = self.__bb[2]
+        h = self.__bb[3]
+        self.frame[y:y+h, x:x+l, :] = [0,0,255]
+        self.frame[y:y+l, x:x+w, :] = [0,0,255]
+        self.frame[y:y+h+l, x+w:x+w+l, :] = [0,0,255]
+        self.frame[y+h:y+h+l, x:x+w+l, :] = [0,0,255]
+        return self.frame
     
     def __add_text(self, frame, text, corner=(300,250)):
         font                   = cv2.FONT_HERSHEY_SIMPLEX
@@ -89,3 +92,9 @@ class Webcam_logic():
             thickness,
             lineType)
         return frame
+
+
+if __name__ == "__main__":
+    cam_ip = os.getenv("CAM_IP")
+    cam = Webcam(cam_ip)
+    cam.start()
