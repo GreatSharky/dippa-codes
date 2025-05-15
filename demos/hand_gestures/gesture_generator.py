@@ -22,7 +22,7 @@ class GestureGenrator():
                 gesture = self.__get_bb_frame(frame)
                 masked_image = self.__masked_image(gesture)
                 file_name = f"{self.__gestures[gesture_index]}_{gesture_counter}.jpg"
-                cv2.imwrite(f"masks/{file_name}", masked_image)
+                cv2.imwrite(f"masks2/{file_name}", masked_image)
                 gesture_index += 1
             if gesture_index == len(self.__gestures):
                 gesture_index = 0
@@ -54,7 +54,7 @@ class GestureGenrator():
             return frame
     
     def __masked_image(self, capture):
-        masks = self.__sam(capture, points=[[64,80]], labels=[1])
+        masks = self.__sam(capture, points=[[64,80], [3,3], [123,123]], labels=[1,0,0])
         mask = masks[0].masks.cpu().data
         h,w = mask.shape[-2:]
         mask = mask.reshape(h,w,1).numpy()
