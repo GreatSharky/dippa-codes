@@ -16,15 +16,17 @@ class VLM_gemma(VLM):
         img = self.get_image(img_file)
         msg = {
             "role" : "user",
-            "content" : "What class is this image? Respond only using the class identifier.",
+
+            "content" : "What is in this image?",
             "images" : [img]
         }
         self.user_msgs = [msg]
 
-    def __create_system_msg(self, description, index, img):
+
+    def __create_system_msg(self, description, index, img_file):
         msg = {
             "role" : "system",
-            "content" : f"Class {index} charasteristics are {description}",
+            "content" : f"This image belongs to class {index}. Its' charasteristics are {description}"
         }
         return msg
     
@@ -46,23 +48,17 @@ class VLM_gemma(VLM):
 descriptions = {
     "ok" : "it resembles the OK sign. The thumb and the index finger create an circle while the three other fingers are extended.",
     "1" : "it has only the index finger pointing upwards and all the other fingers tucked down. The palm is facing the camera.",
-    "2" : "it resembles the V sign for victory or for peace. The index and middle finger are extended and the three other fingers are down. The palm is facing the camera.",           
+    "2" : "it resembles the V sign for victory or for peace. The index and middle finger are extended while the three other fingers are down. The palm is facing the camera.",           
     "3" : "it has the index finger, the middle finger and the ring finger extended while the thumb and the pinky are tucked down. The palm is facing the camera.",
     "4" : "four fingers besides the thumb are extended. The thumb is tucked down into the middle of the palm and the palm is facing the camera.",
     "5" : "all five fingers are extended and separated from each other. The palm is facing the camera."
 }
-gestures = ["ok","1","2","5"]
-model = "gemma3:12b"
-vlm1 = VLM_gemma(model, gestures, descriptions, 1)
-results = []
-for i, ges in enumerate(gestures):
-    for j in range(6):
-        vlm2 = VLM_gemma(model, gestures, descriptions, 1)
-        vlm1.create_user_msg(f"masks/{ges}_{j}.jpg")
-        vlm2.create_user_msg(f"masks/{ges}_{j}.jpg")
-        res1 = vlm1.inference()
-        res2 = vlm2.inference()
-        print(i, res1.message.content, res2.message.content)
-        results.append(str(i) == res1.message.content and str(i) == res2.message.content)
 
-print(np.sum(results)/len(results))
+vlm = VLM_gemma("gemma3:12b", ["ok","1","2","3","4", "5"], descriptions, 1)
+
+
+id = "4"
+print("Real", id)
+vlm.create_user_msg(f"masks/{id}_5.jpg")
+res = vlm.inference()
+print("VLM",res.message.content)
