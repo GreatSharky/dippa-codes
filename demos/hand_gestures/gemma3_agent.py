@@ -16,10 +16,12 @@ class VLM_gemma(VLM):
         img = self.get_image(img_file)
         msg = {
             "role" : "user",
+
             "content" : "What is in this image?",
             "images" : [img]
         }
         self.user_msgs = [msg]
+
 
     def __create_system_msg(self, description, index, img_file):
         msg = {
@@ -51,6 +53,7 @@ descriptions = {
     "4" : "four fingers besides the thumb are extended. The thumb is tucked down into the middle of the palm and the palm is facing the camera.",
     "5" : "all five fingers are extended and separated from each other. The palm is facing the camera."
 }
+
 vlm = VLM_gemma("gemma3:12b", ["ok","1","2","3","4", "5"], descriptions, 1)
 
 
