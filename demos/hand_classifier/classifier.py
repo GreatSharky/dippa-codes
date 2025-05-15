@@ -2,6 +2,7 @@
 from gemma3_agent import VLM_gemma
 import os
 from segment import file_index
+import socket
 
 
 if __name__ == "__main__":
@@ -18,6 +19,11 @@ if __name__ == "__main__":
     path = "tmp"
     files = [f for f in os.listdir(path) if "_mask.jpg"in f]
     file = ""
+    HOST="192.168.125.1"
+    PORT = 5000
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST,PORT))
+    print("TCP client initialized")
     while True:
         files = [f for f in os.listdir(path) if "_mask.jpg"in f]
         if files:
@@ -37,3 +43,4 @@ if __name__ == "__main__":
                 print(response)
                 with open(f"tmp/{file}.tmp", "+w") as tmpfile:
                     tmpfile.write(response)
+                s.sendall(response.encode())

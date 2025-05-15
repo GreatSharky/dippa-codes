@@ -1,8 +1,6 @@
 """This is the webcam part"""
 import cv2
 import os
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 
 class Webcam():
     def __init__(self, cam: str):
@@ -102,5 +100,5 @@ class Webcam():
 
 if __name__ == "__main__":
     cam_ip = os.getenv("CAM_IP")
-    cam = Webcam(cam_ip)
+    cam = Webcam("/dev/video0")
     cam.start()
